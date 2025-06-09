@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { gsap } from "gsap";
+import {Text} from 'troika-three-text'
 
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0x000000, 0, 100);
@@ -40,8 +41,8 @@ controls.update();
 // Cilindro wireframe
 const radius = 4;
 const height = 4;
-const radialSegments = 64;
-const heightSegments = 16; //negli oggetti è 16, prova diversa nel caso non si possa fare scritte ondulate
+const radialSegments = 50;
+const heightSegments = 15; //negli oggetti è 16, prova diversa nel caso non si possa fare scritte ondulate
 
 const cylinderGeo = new THREE.CylinderGeometry(radius, radius, height, radialSegments, heightSegments, true);
 const cylinderEdges = new THREE.EdgesGeometry(cylinderGeo);
@@ -78,62 +79,92 @@ const loader = new GLTFLoader();
 const cdGroup = new THREE.Group();
 scene.add(cdGroup);
 
+
+
 // Config dei CD
 const cdConfigs = [
   {
     path: '/modelli3Dcds/CD_Qholla.glb',
-    position: new THREE.Vector3(-3, -0.61, 0),
+    position: new THREE.Vector3(-3, 0.0, 0),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, 0, 0),
+    name: 'Qholla',
   },
   {
     path: '/modelli3Dcds/CD_Mosque.glb',
-    position: new THREE.Vector3(-1.5, -0.61, -2.6),
+    position: new THREE.Vector3(-1.5, 0, -2.6),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, -Math.PI / 3, 0),
+    name: 'mosque',
   },
   {
     path: '/modelli3Dcds/CD_Manosx.glb',
-    position: new THREE.Vector3(1.5, -0.61, -2.6),
+    position: new THREE.Vector3(1.5, 0, -2.6),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, -2 * Math.PI / 3, 0),
+    name: 'mano sx',
   },
   {
     path: '/modelli3Dcds/CD_Subway.glb',
-    position: new THREE.Vector3(3.0, -0.61, 0.0),
+    position: new THREE.Vector3(3.0, 0, 0.0),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, Math.PI, 0),
+    name: 'subway',
   },
   {
     path: '/modelli3Dcds/CD_Lamanina.glb',
-    position: new THREE.Vector3(1.5, -0.61, 2.6),
+    position: new THREE.Vector3(1.5, 0, 2.6),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, 2 * Math.PI / 3, 0),
+    name: 'la Manina',
   },
   {
     path: '/modelli3Dcds/CD_Legno.glb',
-    position: new THREE.Vector3(-1.5, -0.61, 2.6),
+    position: new THREE.Vector3(-1.5, 0, 2.6),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, Math.PI / 3, 0),
+    name: 'legno',
   },
 ];
 
-// Caricamento modelli
 cdConfigs.forEach((config, index) => {
   loader.load(
     config.path,
     (gltf) => {
       const model = gltf.scene;
-      model.position.copy(config.position);
-      model.scale.copy(config.scale);
-      model.rotation.copy(config.rotation);
-      model.userData.index = index;
-      model.userData.oscillation = {
+
+      // Calcola bounding box per centrare il modello
+      model.traverse(child => {
+        if (child.isMesh) {
+          child.geometry.computeBoundingBox();
+        }
+      });
+
+      const box = new THREE.Box3().setFromObject(model);
+      const center = new THREE.Vector3();
+      box.getCenter(center);
+      const size = new THREE.Vector3();
+      box.getSize(size);
+
+      // Crea un wrapper centrato
+      const wrapper = new THREE.Group();
+      model.position.y -= center.y; // centra verticalmente
+      wrapper.add(model);
+
+      // Applica config al wrapper (non al modello interno)
+      wrapper.position.copy(config.position);
+      wrapper.scale.copy(config.scale);
+      wrapper.rotation.copy(config.rotation);
+      wrapper.userData.originalScale = config.scale.x;
+      wrapper.userData.index = index;
+      wrapper.userData.name = config.name || `CD ${index + 1}`;
+      wrapper.userData.oscillation = {
         x: Math.random() * Math.PI * 2,
         y: Math.random() * Math.PI * 2,
         z: Math.random() * Math.PI * 2,
       };
-      cdGroup.add(model);
+
+      cdGroup.add(wrapper);
     },
     undefined,
     (error) => {
@@ -141,6 +172,8 @@ cdConfigs.forEach((config, index) => {
     }
   );
 });
+
+let currentlyHovered = null;
 
 // CLICK handler
 window.addEventListener("click", (event) => {
@@ -206,14 +239,42 @@ gsap.to(modelClicked.position, {
   }
 });
 
+
+const cdNameDiv = document.getElementById("cd-name"); //per prendere il div del nome CD
+
+
 // HOVER → cursore
 window.addEventListener("mousemove", (event) => {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
+
   const intersects = raycaster.intersectObjects(cdGroup.children, true);
-  document.body.style.cursor = intersects.length > 0 ? "pointer" : "default";
+
+  if (intersects.length > 0) {
+    document.body.style.cursor = "pointer";
+
+    let hovered = intersects[0].object;
+    while (hovered.parent && hovered.parent !== cdGroup) {
+      hovered = hovered.parent;
+    }
+
+    currentlyHovered = hovered;
+
+    // Mostra nome
+    const name = hovered.userData.name;
+    cdNameDiv.textContent = name;
+    cdNameDiv.style.opacity = 1;
+  } else {
+    document.body.style.cursor = "default";
+    currentlyHovered = null;
+
+    // Nascondi nome
+    cdNameDiv.style.opacity = 0;
+  }
 });
+
+
 
 
 
@@ -224,11 +285,21 @@ function animate() {
 
   const time = performance.now() * 0.001;
   cdGroup.children.forEach((model) => {
-    const osc = model.userData.oscillation;
-    //model.rotation.x += Math.sin(time + osc.x) * 0.001;
-    model.rotation.y += Math.sin(time + osc.y) * 0.001;
-    model.rotation.z += Math.sin(time + osc.z) * 0.001;
-  });
+  const osc = model.userData.oscillation;
+
+  // Oscillazione leggera
+  model.rotation.y += Math.sin(time + osc.y) * 0.001;
+  model.rotation.z += Math.sin(time + osc.z) * 0.001;
+
+  // Target scale
+  const base = model.userData.originalScale;
+  const targetScale = (model === currentlyHovered) ? base * 1.1 : base;
+
+  // Interpolazione fluida
+  model.scale.x = THREE.MathUtils.lerp(model.scale.x, targetScale, 0.1);
+  model.scale.y = THREE.MathUtils.lerp(model.scale.y, targetScale, 0.1);
+  model.scale.z = THREE.MathUtils.lerp(model.scale.z, targetScale, 0.1);
+});
 
   renderer.render(scene, camera);
 }

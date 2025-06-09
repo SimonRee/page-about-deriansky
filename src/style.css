@@ -1,5 +1,22 @@
+@font-face {
+  font-family: 'ClashGrotesk-Variable';
+  src: url('/public/Fonts/ClashGrotesk/ClashGrotesk-Variable.woff2') format('woff2'),
+       url('/public/Fonts/ClashGrotesk/ClashGrotesk-Variable.woff') format('woff'),
+       url('/public/Fonts/ClashGrotesk/ClashGrotesk-Variable.ttf') format('truetype');
+  font-weight: 200 700;
+  font-display: swap;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'ClashGrotesk-Light';
+  src: url('/public/Fonts/ClashGrotesk/ClashGrotesk-Light.woff2') format('woff2'),
+       url('/public/Fonts/ClashGrotesk/ClashGrotesk-Light.woff') format('woff'),
+       url('/public/Fonts/ClashGrotesk/ClashGrotesk-Light.ttf') format('truetype');
+  font-style: normal;
+}
+
 body {
-  font-family: sans-serif;
+  font-family: ClashGrotesk-Variable, sans-serif;
   display: block;
   margin: 0;
   padding: 0px;

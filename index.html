@@ -8,7 +8,24 @@
 
   <body>
     <div id="app"></div>
-    <!-- chiude il div informazioni base -->
+    <div id="cd-name" style="
+      position: fixed;
+      bottom: 37px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 4px;
+      background-color: rgba(0, 0, 0, 1); 
+      border-radius: 8px;
+      font-size: 1.2rem;
+      font-family: ClashGrotesk-Variable, sans-serif;
+      font-weight: 350;
+      color: rgb(240, 240, 240);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      white-space: nowrap;
+      z-index: 2;">
+    </div>
     <script src="src/main.js" type="module"></script>
     <link rel="stylesheet" href="src/style.css" />
   </body>
