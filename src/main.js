@@ -81,37 +81,37 @@ scene.add(cdGroup);
 // Config dei CD
 const cdConfigs = [
   {
-    path: '/modelli3Dcds/cd1.glb',
+    path: '/modelli3Dcds/CD_Qholla.glb',
     position: new THREE.Vector3(-3, -0.61, 0),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, 0, 0),
   },
   {
-    path: '/modelli3Dcds/cd2.glb',
+    path: '/modelli3Dcds/CD_Mosque.glb',
     position: new THREE.Vector3(-1.5, -0.61, -2.6),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, -Math.PI / 3, 0),
   },
   {
-    path: '/modelli3Dcds/cd3.glb',
+    path: '/modelli3Dcds/CD_Manosx.glb',
     position: new THREE.Vector3(1.5, -0.61, -2.6),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, -2 * Math.PI / 3, 0),
   },
   {
-    path: '/modelli3Dcds/cd4.glb',
+    path: '/modelli3Dcds/CD_Subway.glb',
     position: new THREE.Vector3(3.0, -0.61, 0.0),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, Math.PI, 0),
   },
   {
-    path: '/modelli3Dcds/cd5.glb',
+    path: '/modelli3Dcds/CD_Lamanina.glb',
     position: new THREE.Vector3(1.5, -0.61, 2.6),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, 2 * Math.PI / 3, 0),
   },
   {
-    path: '/modelli3Dcds/cd6.glb',
+    path: '/modelli3Dcds/CD_Legno.glb',
     position: new THREE.Vector3(-1.5, -0.61, 2.6),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, Math.PI / 3, 0),
