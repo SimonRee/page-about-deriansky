@@ -66,12 +66,12 @@ for (let i = 0; i <= heightSegments; i++) {
 }
 
 const cdUrls = [
+  "https://wddc-groupieml.webflow.io/canzoni-qholla",
   "https://wddc-groupieml.webflow.io/mosqe",
-  "https://esempio.com/cd2",
-  "https://esempio.com/cd3",
-  "https://esempio.com/cd4",
-  "https://esempio.com/cd5",
-  "https://esempio.com/cd6",
+  "https://wddc-groupieml.webflow.io/manosx",
+  "https://wddc-groupieml.webflow.io/subway",
+  "https://wddc-groupieml.webflow.io/canzoni-la-manina",
+  "https://wddc-groupieml.webflow.io/canzoni-legno",
 ];
 
 // CD loader
