@@ -19,8 +19,9 @@ document.body.appendChild(renderer.domElement);
 
 // Luci
 scene.add(new THREE.AmbientLight(0xffffff, 6));
-//const pointLight = new THREE.PointLight(0xffffff, 5, 0);
+//const pointLight = new THREE.PointLight(0xffffff, 15, 0, 5);
 //scene.add(pointLight);
+//pointLight.position.set(0, 0, 0);
 const dirLight = new THREE.DirectionalLight(0xffffff, 10);
 dirLight.position.set(0, 5, 0);
 scene.add(dirLight);
@@ -38,13 +39,23 @@ controls.rotateSpeed = -0.3;
 controls.target.set(-0.0001, 0, 0);
 controls.update();
 
-// Cilindro wireframe
-const radius = 4;
-const height = 4;
+// Creazione del cilindro wireframe segmentato
+const cylinderRadius = 4;
+const cylinderHeight = 4;
 const radialSegments = 50;
-const heightSegments = 15; //negli oggetti è 16, prova diversa nel caso non si possa fare scritte ondulate
+const heightSegments = 13;
 
-const cylinderGeo = new THREE.CylinderGeometry(radius, radius, height, radialSegments, heightSegments, true);
+// Creazione del cilindro principale con segmenti verticali
+const cylinderGeo = new THREE.CylinderGeometry(
+  cylinderRadius,
+  cylinderRadius,
+  cylinderHeight,
+  radialSegments,
+  heightSegments,
+  true
+);
+
+// Estrazione dei bordi del cilindro
 const cylinderEdges = new THREE.EdgesGeometry(cylinderGeo);
 const cylinderLines = new THREE.LineSegments(
   cylinderEdges,
@@ -52,9 +63,10 @@ const cylinderLines = new THREE.LineSegments(
 );
 scene.add(cylinderLines);
 
+// Aggiunta delle linee orizzontali
 for (let i = 0; i <= heightSegments; i++) {
-  const y = (i / heightSegments - 0.5) * height;
-  const ringGeo = new THREE.CircleGeometry(radius, radialSegments);
+  const y = (i / heightSegments - 0.5) * cylinderHeight - 0.1; // -0.1 sposta le righe sull'asse Y
+  const ringGeo = new THREE.CircleGeometry(cylinderRadius, radialSegments);
   ringGeo.rotateX(Math.PI / 2);
   const ringEdges = new THREE.EdgesGeometry(ringGeo);
   const ringLines = new THREE.LineSegments(
@@ -85,45 +97,45 @@ scene.add(cdGroup);
 const cdConfigs = [
   {
     path: '/modelli3Dcds/CD_Qholla.glb',
-    position: new THREE.Vector3(-3, 0.0, 0),
+    position: new THREE.Vector3(-3, 0.0, 0.05),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, 0, 0),
-    name: 'Qholla',
+    name: 'QHOLLA',
   },
   {
     path: '/modelli3Dcds/CD_Mosque.glb',
     position: new THREE.Vector3(-1.5, 0, -2.6),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, -Math.PI / 3, 0),
-    name: 'mosque',
+    name: 'MOSQUE',
   },
   {
     path: '/modelli3Dcds/CD_Manosx.glb',
     position: new THREE.Vector3(1.5, 0, -2.6),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, -2 * Math.PI / 3, 0),
-    name: 'mano sx',
+    name: 'MANO SX',
   },
   {
     path: '/modelli3Dcds/CD_Subway.glb',
     position: new THREE.Vector3(3.0, 0, 0.0),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, Math.PI, 0),
-    name: 'subway',
+    name: 'SUBWAY',
   },
   {
     path: '/modelli3Dcds/CD_Lamanina.glb',
     position: new THREE.Vector3(1.5, 0, 2.6),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, 2 * Math.PI / 3, 0),
-    name: 'la Manina',
+    name: 'LA MANINA',
   },
   {
     path: '/modelli3Dcds/CD_Legno.glb',
     position: new THREE.Vector3(-1.5, 0, 2.6),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, Math.PI / 3, 0),
-    name: 'legno',
+    name: 'LEGNO',
   },
 ];
 
@@ -175,8 +187,32 @@ cdConfigs.forEach((config, index) => {
 
 let currentlyHovered = null;
 
+let mouseDownPos = new THREE.Vector2();
+let isDragging = false;
+
+window.addEventListener("mousedown", (event) => {
+  mouseDownPos.set(event.clientX, event.clientY);
+  isDragging = false;
+});
+
+window.addEventListener("mousemove", (event) => {
+  const dx = event.clientX - mouseDownPos.x;
+  const dy = event.clientY - mouseDownPos.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  if (distance > 5) {
+    isDragging = true;
+  }
+});
+
 // CLICK handler
 window.addEventListener("click", (event) => {
+
+  if (isDragging) {
+    mouse.clicked = false;
+    return; // annulla il click se era un drag
+  }
+
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
@@ -275,6 +311,141 @@ window.addEventListener("mousemove", (event) => {
 });
 
 
+window.addEventListener('mousedown', () => {
+  mouse.clicked = true;
+});
+
+//mettiamo i testi della NavBar
+//TESTI NAVBAR
+const navLabels = []; // salva tutti i gruppi per l'animazione
+const clickableNavs = []; // oggetti cliccabili
+const labelRadius = 3.3;
+
+// Definisci le etichette con angolo e link
+const labelsData = [//questi dati non modificano nulla, perché le modifiche vanno fatte nella parte responsive
+  { text: 'ABOUT', angle: Math.PI * 0.1, y: -0.97, link: '/about' }, // basso
+  { text: 'FLATFADE', angle: -Math.PI * 0.1, y: -0.97, link: 'https://wddc-groupieml.webflow.io/psiche' }, // basso
+  { text: 'PSICHE', angle: -Math.PI * 0.04, y: 1.06, link: 'https://wddc-groupieml.webflow.io/psiche?skipTunnel=true' }, // alto
+  { text: 'SPECCHIO', angle: Math.PI * 0.04, y: 1.06, link: 'https://wddc-groupieml.webflow.io/specchio' }, // alto
+];
+
+labelsData.forEach(data => {
+  const group = new THREE.Group();
+
+  // Troika Text
+  const label = new Text();
+  label.text = data.text;
+  label.font = "/Fonts/ClashGrotesk/ClashGrotesk-Regular.ttf";
+  label.fontSize = 0.07;
+  label.color = data.text === "PSICHE" ? 0xaaaaaa : 0xffffff;
+  label.anchorX = 'center';
+  label.anchorY = 'middle';
+  label.outlineWidth = 0.0001; //  0.005 ≈ 1px 
+  label.outlineColor = 0xffffff; // colore del bordo
+  label.userData.link = data.link;
+  label.sync();
+
+  // Sfondo nero
+  const bgGeo = new THREE.PlaneGeometry(0.36, 0.12);
+  const bgMat = new THREE.MeshBasicMaterial({ color: 0x000000, opacity: 1, transparent: true });
+  const bg = new THREE.Mesh(bgGeo, bgMat);
+  bg.position.z = -0.01;
+
+  group.add(bg);
+  group.add(label);
+
+
+  // Posizione curva sul cilindro
+  const angle = data.angle;
+  group.userData.originalAngle = angle; // salva l'angolo originale
+  group.position.x = Math.cos(angle) * labelRadius;
+  group.position.z = Math.sin(angle) * labelRadius;
+  group.position.y = data.y;
+
+  group.userData.link = data.link;
+
+  scene.add(group);
+  group.visible = true; 
+  navLabels.push(group);
+  clickableNavs.push(group);
+});
+
+//per rendere responsive le etichette della NavBar
+function updateNavLabelAngles() {
+  const isMobile = window.innerWidth < 768;
+
+  navLabels.forEach((group, index) => {
+    const data = labelsData[index];
+    
+    // Calcolo nuovo angolo solo se la y è negativa (etichette in basso)
+    let baseAngle = data.text === 'ABOUT' ? Math.PI * 0.14 : 
+                    data.text === 'FLATFADE' ? -Math.PI * 0.14 :
+                    data.text === 'SPECCHIO' ? Math.PI * 0.04 :
+                    data.text === 'PSICHE' ?-Math.PI * 0.04: 0;
+
+    const newAngle = isMobile && data.y < 0 ? baseAngle * 0.6 : baseAngle;
+
+    data.angle = newAngle;
+    group.userData.originalAngle = newAngle;
+  });
+}
+
+//rende cliccabili le etichette della navbar
+function updateNavInteractions() {
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(clickableNavs, true);
+
+  if (intersects.length > 0) {
+    const hovered = intersects[0].object.parent; // Prendiamo il gruppo
+
+    document.body.style.cursor = "pointer";
+
+    clickableNavs.forEach(group => {
+      const scaleTarget = group === hovered ? 1.1 : 1;
+      group.scale.lerp(new THREE.Vector3(scaleTarget, scaleTarget, scaleTarget), 0.1);
+    });
+
+    // Click handling (solo se è stato cliccato e non solo hoverato)
+    if (mouse.clicked) {
+  const link = hovered.userData.link;
+  if (link) {
+    controls.enabled = false;
+
+    // Crea cono nero davanti alla camera
+    const coneGeometry = new THREE.ConeGeometry(3.8, 10, 64, 1, true);
+    const coneMaterial = new THREE.MeshBasicMaterial({
+      color: 0x000000,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0
+    });
+    const fadeCone = new THREE.Mesh(coneGeometry, coneMaterial);
+    fadeCone.position.copy(camera.position);
+    fadeCone.quaternion.copy(camera.quaternion);
+    scene.add(fadeCone);
+
+    // Fade in
+    gsap.to(coneMaterial, {
+      opacity: 1,
+      duration: 0.95,
+      ease: "power1.inOut"
+    });
+
+    // Dopo animazione → vai alla pagina
+    setTimeout(() => {
+      window.location.href = link;
+    }, 1200);
+  }
+}
+
+  } else {
+    document.body.style.cursor = "default";
+    clickableNavs.forEach(group => {
+      group.scale.lerp(new THREE.Vector3(1, 1, 1), 0.1);
+    });
+  }
+  mouse.clicked = false; // Reset dopo il click
+}
 
 
 
@@ -300,6 +471,25 @@ function animate() {
   model.scale.y = THREE.MathUtils.lerp(model.scale.y, targetScale, 0.1);
   model.scale.z = THREE.MathUtils.lerp(model.scale.z, targetScale, 0.1);
 });
+
+
+  // Calcola l'angolo Y della camera (orientamento orizzontale) fa seguire i label alla camera
+  const cameraQuaternion = camera.quaternion.clone();
+  const euler = new THREE.Euler().setFromQuaternion(cameraQuaternion, 'YXZ');
+  const cameraRotationY = euler.y;
+  // Applica una rotazione inversa alle label per farle "seguire" la camera
+  navLabels.forEach(group => {
+    const angle = group.userData.originalAngle;
+    const radius = labelRadius;
+    const totalAngle = angle - cameraRotationY + Math.PI*1.5 //il meno -cameraRotationY serve per farle ruotare nell'altro senso come con gli orbit controls const totalAngle = angle - cameraRotationY + Math.PI*0.5;
+
+    group.position.x = Math.cos(totalAngle) * radius;
+    group.position.z = Math.sin(totalAngle) * radius;
+
+    group.lookAt(0, group.position.y, 0); // Fa sì che guardino sempre il centro
+  });
+  updateNavLabelAngles()
+  updateNavInteractions()
 
   renderer.render(scene, camera);
 }
