@@ -4,6 +4,34 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { gsap } from "gsap";
 import {Text} from 'troika-three-text'
 
+
+//PRELOAD DELLA PAGINA
+const loadingScreen = document.getElementById("loading-screen");
+
+const manager = new THREE.LoadingManager();
+
+// Quando tutto è caricato
+manager.onStart = (url, itemsLoaded, itemsTotal) => {
+  console.log(`INIZIO: Sto caricando ${url}. ${itemsLoaded}/${itemsTotal}`);
+};
+
+manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+  console.log(`PROGRESSO: Caricato ${url}. ${itemsLoaded}/${itemsTotal}`);
+};
+
+manager.onLoad = () => {
+  console.log(" Tutte le risorse sono state caricate!");
+  loadingScreen.style.opacity = "0";
+  setTimeout(() => {
+    loadingScreen.style.display = "none";
+  }, 1000);
+};
+
+manager.onError = (url) => {
+  console.error(` Errore nel caricamento di ${url}`);
+};
+
+
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0x000000, 0, 100);
 
@@ -87,7 +115,7 @@ const cdUrls = [
 ];
 
 // CD loader
-const loader = new GLTFLoader();
+const loader = new GLTFLoader(manager);
 const cdGroup = new THREE.Group();
 scene.add(cdGroup);
 
