@@ -3,6 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { gsap } from "gsap";
 import {Text} from 'troika-three-text'
+import lottie from "lottie-web"; 
 
 
 //PRELOAD DELLA PAGINA
@@ -31,6 +32,14 @@ manager.onError = (url) => {
   console.error(` Errore nel caricamento di ${url}`);
 };
 
+//animazione di caricamento
+lottie.loadAnimation({
+  container: document.getElementById("loading-animation"),
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+  path: "/caricamento.json", // assicurati che il path sia corretto
+});
 
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0x000000, 0, 100);
@@ -159,7 +168,7 @@ const cdConfigs = [
     position: new THREE.Vector3(-1.5, 0, -2.6),
     scale: new THREE.Vector3(0.6, 0.6, 0.6),
     rotation: new THREE.Euler(0, -Math.PI / 3, 0),
-    name: 'MOSQUE',
+    name: 'MOSQE',
   },
   {
     path: '/modelli3Dcds/CD_Manosx.glb',
@@ -400,7 +409,7 @@ labelsData.forEach(data => {
     label.fontSize = 0.060; // standard
   }
 
-  label.color = data.text === "PSICHE" ? 0xaaaaaa : 0xffffff;
+  label.color = data.text === "PSICHE" ? 0x636363 : 0xffffff;
   label.anchorX = 'center';
   label.anchorY = 'middle';
   label.outlineWidth = 0.0001; //  0.005 ≈ 1px 

@@ -58,4 +58,14 @@ canvas {
     transition: opacity 1s ease;
     z-index: 9999;
     pointer-events: all;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
+
+  #loading-animation {
+  width: 20vw;
+  height: 20vw;
+}
+
