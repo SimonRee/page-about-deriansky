@@ -507,7 +507,7 @@ function updateNavInteractions() {
 
     // Dopo animazione → vai alla pagina
     setTimeout(() => {
-      window.location.href = link;
+      window.top.location.href = link;
     }, 1200);
   }
 }
