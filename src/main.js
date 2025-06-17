@@ -331,7 +331,7 @@ gsap.to(modelClicked.position, {
 
     // Dopo l’animazione: apri URL
     setTimeout(() => {
-      window.location.href = targetUrl;
+      window.top.location.href = targetUrl; //il top forza a cambiare pagina non solo all'iframe in webflow ma a proprio webflow stesso
     }, 1200); // leggermente dopo fine animazione
   }
 });
@@ -512,7 +512,7 @@ function updateNavInteractions() {
   }
 }
 
-  } else {
+  } else if (!currentlyHovered) { //questo !currentlyHovered serve per non creare conflitti con la navbar che non faceva aumentare la gradezza sopra i CD
     //document.body.style.cursor = "default";
     customCursor.style.width = "16px"; // CURSORE CERCHIO
     customCursor.style.height = "16px";// CURSORE CERCHIO
