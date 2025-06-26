@@ -272,16 +272,10 @@ window.addEventListener("mousemove", (event) => {
   }
 });
 
-// CLICK handler
-window.addEventListener("click", (event) => {
-
-  if (isDragging) {
-    mouse.clicked = false;
-    return; // annulla il click se era un drag
-  }
-
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+// CLICK handler è una funzione che poi viene inserita sia per il click desktop che per il touch mobile
+function handleCDClick(x, y) {
+  mouse.x = (x / window.innerWidth) * 2 - 1;
+  mouse.y = -(y / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(cdGroup.children, true);
 
@@ -299,36 +293,32 @@ window.addEventListener("click", (event) => {
     // Disabilita controlli
     controls.enabled = false;
 
-// Nuova posizione: centro della scena, stessa altezza Y
-const targetPos = new THREE.Vector3(0, modelClicked.position.y, 0);
+    // Posizione finale (centro, con y diversa su mobile)
+    const yOffset = isMobile ? 0.1 : modelClicked.position.y;
+    const targetPos = new THREE.Vector3(0, yOffset, 0);
 
-// Nuova rotazione: guarda verso la camera (che è anch'essa in 0,0,0)
-//const angleToCamera = Math.atan2(camera.position.x - targetPos.x, camera.position.z - targetPos.z);
-// Anima posizione e rotazione
-gsap.to(modelClicked.position, {
-  x: targetPos.x,
-  y: targetPos.y,
-  z: targetPos.z,
-  duration: 1,
-  ease: "power2.inOut"
-});
-
-/*gsap.to(modelClicked.rotation, {
-  y: angleToCamera,
-  duration: 2,
-  ease: "power2.inOut"
-});*/
+    gsap.to(modelClicked.position, {
+      x: targetPos.x,
+      y: targetPos.y,
+      z: targetPos.z,
+      duration: 1,
+      ease: "power2.inOut"
+    });
 
     // Crea cono nero
     const coneGeometry = new THREE.ConeGeometry(3.8, 10, 64, 1, true);
-    const coneMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide, transparent: true, opacity: 0 });
+    const coneMaterial = new THREE.MeshBasicMaterial({
+      color: 0x000000,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0
+    });
     const fadeCone = new THREE.Mesh(coneGeometry, coneMaterial);
-
     fadeCone.position.copy(camera.position);
     fadeCone.quaternion.copy(camera.quaternion);
     scene.add(fadeCone);
 
-    // Anima l'opacità del cono nero
+    // Anima opacità
     gsap.to(coneMaterial, {
       opacity: 1,
       duration: 0.95,
@@ -337,11 +327,27 @@ gsap.to(modelClicked.position, {
 
     // Dopo l’animazione: apri URL
     setTimeout(() => {
-      window.top.location.href = targetUrl; //il top forza a cambiare pagina non solo all'iframe in webflow ma a proprio webflow stesso
-    }, 1200); // leggermente dopo fine animazione
+      window.top.location.href = targetUrl;
+    }, 1200);
   }
+}
+
+// Click Desktop
+window.addEventListener("click", (event) => {
+  if (isDragging) {
+    mouse.clicked = false;
+    return;
+  }
+  handleCDClick(event.clientX, event.clientY);
 });
 
+// Click Mobile
+window.addEventListener("touchend", (event) => {
+  if (event.changedTouches.length === 1) {
+    const touch = event.changedTouches[0];
+    handleCDClick(touch.clientX, touch.clientY);
+  }
+});
 
 const cdNameDiv = document.getElementById("cd-name"); //per prendere il div del nome CD
 
@@ -476,65 +482,102 @@ function updateNavLabelAngles() {
   });
 }
 
-//rende cliccabili le etichette della navbar
+//CLICK HANDLER NAVBAR sempre poi usato sia in desktop che in mobile
+function handleNavClick(x, y) {
+  mouse.x = (x / window.innerWidth) * 2 - 1;
+  mouse.y = -(y / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(clickableNavs, true);
+
+  if (intersects.length > 0) {
+    const hovered = intersects[0].object.parent;
+    const link = hovered.userData.link;
+
+    if (link) {
+      controls.enabled = false;
+
+      // Crea cono nero
+      const coneGeometry = new THREE.ConeGeometry(3.8, 10, 64, 1, true);
+      const coneMaterial = new THREE.MeshBasicMaterial({
+        color: 0x000000,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0
+      });
+      const fadeCone = new THREE.Mesh(coneGeometry, coneMaterial);
+      fadeCone.position.copy(camera.position);
+      fadeCone.quaternion.copy(camera.quaternion);
+      scene.add(fadeCone);
+
+      // Fade in
+      gsap.to(coneMaterial, {
+        opacity: 1,
+        duration: 0.95,
+        ease: "power1.inOut"
+      });
+
+      // Redirect
+      setTimeout(() => {
+        window.top.location.href = link;
+      }, 1200);
+    }
+  }
+}
+
+// 🎯 DESKTOP click → usa mouse.clicked
+window.addEventListener("click", (event) => {
+  if (isDragging) {
+    mouse.clicked = false;
+    return;
+  }
+  mouse.clicked = true; // per l'interazione navbar
+});
+
+// 🟢 MOBILE tap diretto su navbar
+window.addEventListener("touchend", (event) => {
+  if (event.changedTouches.length === 1) {
+    const touch = event.changedTouches[0];
+    handleNavClick(touch.clientX, touch.clientY);
+  }
+});
+
+// 🔁 Rende cliccabili le etichette della navbar (hover e animazioni)
 function updateNavInteractions() {
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(clickableNavs, true);
 
   if (intersects.length > 0) {
-    const hovered = intersects[0].object.parent; // Prendiamo il gruppo
+    const hovered = intersects[0].object.parent;
 
-    //document.body.style.cursor = "pointer";
-    customCursor.style.width = "24px";// CURSORE CERCHIO
-    customCursor.style.height = "24px";// CURSORE CERCHIO
+    customCursor.style.width = "24px";
+    customCursor.style.height = "24px";
 
     clickableNavs.forEach(group => {
       const scaleTarget = group === hovered ? 1.1 : 1;
       group.scale.lerp(new THREE.Vector3(scaleTarget, scaleTarget, scaleTarget), 0.1);
     });
 
-    // Click handling (solo se è stato cliccato e non solo hoverato)
+    // 🔘 Click su desktop (mouse.clicked è true solo su click, non hover)
     if (mouse.clicked) {
-  const link = hovered.userData.link;
-  if (link) {
-    controls.enabled = false;
+      const link = hovered.userData.link;
+      if (link) {
+        handleNavClick(
+          (mouse.x + 1) * window.innerWidth / 2,
+          (-mouse.y + 1) * window.innerHeight / 2
+        );
+      }
+    }
 
-    // Crea cono nero davanti alla camera
-    const coneGeometry = new THREE.ConeGeometry(3.8, 10, 64, 1, true);
-    const coneMaterial = new THREE.MeshBasicMaterial({
-      color: 0x000000,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0
-    });
-    const fadeCone = new THREE.Mesh(coneGeometry, coneMaterial);
-    fadeCone.position.copy(camera.position);
-    fadeCone.quaternion.copy(camera.quaternion);
-    scene.add(fadeCone);
+  } else if (!currentlyHovered) {
+    customCursor.style.width = "16px";
+    customCursor.style.height = "16px";
 
-    // Fade in
-    gsap.to(coneMaterial, {
-      opacity: 1,
-      duration: 0.95,
-      ease: "power1.inOut"
-    });
-
-    // Dopo animazione → vai alla pagina
-    setTimeout(() => {
-      window.top.location.href = link;
-    }, 1200);
-  }
-}
-
-  } else if (!currentlyHovered) { //questo !currentlyHovered serve per non creare conflitti con la navbar che non faceva aumentare la gradezza sopra i CD
-    //document.body.style.cursor = "default";
-    customCursor.style.width = "16px"; // CURSORE CERCHIO
-    customCursor.style.height = "16px";// CURSORE CERCHIO
     clickableNavs.forEach(group => {
       group.scale.lerp(new THREE.Vector3(1, 1, 1), 0.1);
     });
   }
-  mouse.clicked = false; // Reset dopo il click
+
+  mouse.clicked = false;
 }
 
 
