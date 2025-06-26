@@ -24,6 +24,7 @@ body {
   width: 100vw;
   cursor: none;
   overflow-y: hidden;
+  touch-action: none;
 }
 
 #customCursor {

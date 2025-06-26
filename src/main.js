@@ -208,7 +208,7 @@ const cdConfigs = [
 
 if (isMobile) {
   cdConfigs.forEach(config => {
-    config.position.y += 0.5;
+    config.position.y += 0.2;
   });
 }
 
