@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import {Text} from 'troika-three-text'
 import lottie from "lottie-web"; 
 
+const isMobile = window.innerWidth < 768; // Controlla se il dispositivo è mobile // per testare imposta a true
 
 //PRELOAD DELLA PAGINA
 const loadingScreen = document.getElementById("loading-screen");
@@ -44,7 +45,10 @@ lottie.loadAnimation({
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0x000000, 0, 100);
 
-const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(isMobile ? 50 : 40,
+window.innerWidth / window.innerHeight,
+0.1,
+1000);
 camera.position.set(0, 0, 0);
 
 const raycaster = new THREE.Raycaster();
@@ -63,19 +67,21 @@ let targetX = cursorX;
 let targetY = cursorY;
 const trailingSpeed = 0.15;
 
-window.addEventListener("mousemove", (e) => {
-  targetX = e.clientX;
-  targetY = e.clientY;
-});
+if (!isMobile) {
+  window.addEventListener("mousemove", (e) => {
+    targetX = e.clientX;
+    targetY = e.clientY;
+  });
 
-// Anima il movimento del cursore
-function animateCursor() {
-  cursorX += (targetX - cursorX) * trailingSpeed;
-  cursorY += (targetY - cursorY) * trailingSpeed;
-  customCursor.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%)`;
-  requestAnimationFrame(animateCursor);
+  function animateCursor() {
+    cursorX += (targetX - cursorX) * trailingSpeed;
+    cursorY += (targetY - cursorY) * trailingSpeed;
+    customCursor.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%)`;
+    requestAnimationFrame(animateCursor);
+  }
+
+  animateCursor();
 }
-animateCursor();
 
 
 // Luci
@@ -432,8 +438,16 @@ labelsData.forEach(data => {
   group.userData.originalAngle = angle; // salva l'angolo originale
   group.position.x = Math.cos(angle) * labelRadius;
   group.position.z = Math.sin(angle) * labelRadius;
-  group.position.y = data.y;
 
+  let yPos = data.y;
+
+// Alza le scritte sopra e sotto su mobile
+if (isMobile) {
+  if (data.y < 0) yPos += 0.0; // scritte in basso: alzale
+  else yPos += 0.255; // scritte in alto: alzale anche loro
+}
+
+group.position.y = yPos;
   group.userData.link = data.link;
 
   scene.add(group);
@@ -455,7 +469,7 @@ function updateNavLabelAngles() {
                     data.text === 'SPECCHIO' ? Math.PI * 0.04 :
                     data.text === 'PSICHE' ?-Math.PI * 0.04: 0;
 
-    const newAngle = isMobile && data.y < 0 ? baseAngle * 0.6 : baseAngle;
+    const newAngle = isMobile && data.y < 0 ? baseAngle * 0.3 : baseAngle;
 
     data.angle = newAngle;
     group.userData.originalAngle = newAngle;
