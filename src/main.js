@@ -59,6 +59,32 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 
+
+//robette per evitare problemi di click durante lo scroll su mobile
+let touchStartX = null;
+let touchMoved = false;
+
+window.addEventListener("touchstart", (e) => {
+  if (e.touches.length === 1) {
+    touchStartX = e.touches[0].clientX;
+    touchMoved = false;
+  }
+});
+
+window.addEventListener("touchmove", (e) => {
+  if (e.touches.length === 1 && touchStartX !== null) {
+    const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
+    if (deltaX > 10) { // soglia per ignorare tocchi con movimento
+      touchMoved = true;
+    }
+  }
+});
+
+window.addEventListener("touchend", () => {
+  touchStartX = null;
+});
+
+
 // Cursore personalizzato CURSORE CERCHIO
 const customCursor = document.getElementById("customCursor");
 let cursorX = window.innerWidth / 2;
@@ -280,6 +306,10 @@ window.addEventListener("mousemove", (event) => {
 
 // CLICK handler è una funzione che poi viene inserita sia per il click desktop che per il touch mobile
 function handleCDClick(x, y) {
+  if (isDragging || touchMoved) {
+  mouse.clicked = false;
+  return;
+}
   mouse.x = (x / window.innerWidth) * 2 - 1;
   mouse.y = -(y / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
