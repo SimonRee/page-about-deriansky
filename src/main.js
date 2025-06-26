@@ -206,6 +206,12 @@ const cdConfigs = [
   },
 ];
 
+if (isMobile) {
+  cdConfigs.forEach(config => {
+    config.position.y += 0.5;
+  });
+}
+
 cdConfigs.forEach((config, index) => {
   loader.load(
     config.path,
