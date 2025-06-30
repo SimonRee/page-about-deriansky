@@ -39,7 +39,7 @@ lottie.loadAnimation({
   renderer: "svg",
   loop: true,
   autoplay: true,
-  path: "/caricamento.json", // assicurati che il path sia corretto
+  path: "/testa.json", // assicurati che il path sia corretto
 });
 
 const scene = new THREE.Scene();

@@ -80,5 +80,9 @@ canvas {
   body {
     cursor: default !important;
   }
+  #loading-animation {
+  width: 10vw;
+  height: 10vw;
+}
 }
 
