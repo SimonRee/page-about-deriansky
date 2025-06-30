@@ -69,31 +69,31 @@ const modelsData = [
     path: "/models/gio.glb",
     desktop: { position: [0, 2, 0], scale: [1.3, 1.3, 1.3] },
     tablet: { position: [2, 2, 0], scale: [1, 1, 1] },
-    mobile: { position: [0, -1, 0], scale: [1, 1, 1] }
+    mobile: { position: [0, -1, 0], scale: [1.1, 1.1, 1.1] }
   },
   {
     path: "/models/rebecca.glb",
     desktop: { position: [6, 2, 0], scale: [1, 1, 1] },
     tablet: { position: [-2, 0, 0], scale: [1, 1, 1] },
-    mobile: { position: [0, -4, 0], scale: [1, 1, 1] }
+    mobile: { position: [0, -4, 0], scale: [0.8, 0.8, 0.8] }
   },
   {
     path: "/models/marta.glb",
     desktop: { position: [-6, -2, 0], scale: [0.9, 0.9, 0.9] },
     tablet: { position: [2, 0, 0], scale: [1, 1, 1] },
-    mobile: { position: [0, -7, 0], scale: [1, 1, 1] }
+    mobile: { position: [0, -7, 0], scale: [0.7, 0.7, 0.7] }
   },
   {
     path: "/models/simon.glb",
     desktop: { position: [0, -2, 0], scale: [0.9, 0.9, 0.9] },
     tablet: { position: [-2, -2, 0], scale: [1, 1, 1] },
-    mobile: { position: [0, -10, 0], scale: [1, 1, 1] }
+    mobile: { position: [0, -10, 0], scale: [0.7, 0.7, 0.7] }
   },
   {
     path: "/models/fra.glb",
     desktop: { position: [6, -2, 0], scale: [1, 1, 1] },
     tablet: { position: [2, -2, 0], scale: [1, 1, 1] },
-    mobile: { position: [0, -13, 0], scale: [1, 1, 1] }
+    mobile: { position: [0, -13, 0], scale: [0.8, 0.8, 0.8] }
   }
 ];
 
@@ -156,7 +156,7 @@ animate();
 
 
 
-
+/*
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -177,4 +177,4 @@ rotatingModels.forEach((model, index) => {
   model.position.set(...config.position);
   model.scale.set(...config.scale);
 });
-}); 
+}); */
