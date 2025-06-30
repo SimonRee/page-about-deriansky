@@ -61,39 +61,39 @@ const rotatingModels = [];
 const modelsData = [
   {
     path: "/models/katrin.glb",
-    desktop: { position: [-6, 2, 0], scale: [1.2, 1.2, 1.2] },
+    desktop: { position: [-6, 1.6, 0], scale: [1.2, 1.2, 1.2] },
     tablet: { position: [-2, 2, 0], scale: [1, 1, 1] },
-    mobile: { position: [0, 2, 0], scale: [1, 1, 1] }
+    mobile: { position: [0, 1.6, 0], scale: [1, 1, 1] }
   },
   {
     path: "/models/gio.glb",
-    desktop: { position: [0, 2, 0], scale: [1.3, 1.3, 1.3] },
+    desktop: { position: [0, 1.6, 0], scale: [1.3, 1.3, 1.3] },
     tablet: { position: [2, 2, 0], scale: [1, 1, 1] },
-    mobile: { position: [0, -1, 0], scale: [1.1, 1.1, 1.1] }
+    mobile: { position: [0, -2.6, 0], scale: [1.1, 1.1, 1.1] }
   },
   {
     path: "/models/rebecca.glb",
-    desktop: { position: [6, 2, 0], scale: [1, 1, 1] },
+    desktop: { position: [6, 1.6, 0], scale: [1, 1, 1] },
     tablet: { position: [-2, 0, 0], scale: [1, 1, 1] },
-    mobile: { position: [0, -4, 0], scale: [0.8, 0.8, 0.8] }
+    mobile: { position: [0, -5.6, 0], scale: [0.8, 0.8, 0.8] }
   },
   {
     path: "/models/marta.glb",
-    desktop: { position: [-6, -2, 0], scale: [0.9, 0.9, 0.9] },
+    desktop: { position: [-6, -2.4, 0], scale: [0.9, 0.9, 0.9] },
     tablet: { position: [2, 0, 0], scale: [1, 1, 1] },
-    mobile: { position: [0, -7, 0], scale: [0.7, 0.7, 0.7] }
+    mobile: { position: [0, -8.6, 0], scale: [0.7, 0.7, 0.7] }
   },
   {
     path: "/models/simon.glb",
-    desktop: { position: [0, -2, 0], scale: [0.9, 0.9, 0.9] },
+    desktop: { position: [0, -2.4, 0], scale: [0.9, 0.9, 0.9] },
     tablet: { position: [-2, -2, 0], scale: [1, 1, 1] },
-    mobile: { position: [0, -10, 0], scale: [0.7, 0.7, 0.7] }
+    mobile: { position: [0, -11.6, 0], scale: [0.7, 0.7, 0.7] }
   },
   {
     path: "/models/fra.glb",
-    desktop: { position: [6, -2, 0], scale: [1, 1, 1] },
+    desktop: { position: [6, -2.4, 0], scale: [1, 1, 1] },
     tablet: { position: [2, -2, 0], scale: [1, 1, 1] },
-    mobile: { position: [0, -13, 0], scale: [0.8, 0.8, 0.8] }
+    mobile: { position: [0, -14.6, 0], scale: [0.8, 0.8, 0.8] }
   }
 ];
 
