@@ -64,7 +64,7 @@ const rotatingModels = [];
 const modelsData = [
   {
     path: "/models/katrin.glb",
-    desktop: { position: [-5.8, 1.6, 0], scale: [1.2, 1.2, 1.2] },
+    desktop: { position: [-5.5, 1.6, 0], scale: [1.2, 1.2, 1.2] },
     tablet: { position: [-2, 2, 0], scale: [1, 1, 1] },
     mobile: { position: [0, 1.6, 0], scale: [1, 1, 1] }
   },
@@ -76,13 +76,13 @@ const modelsData = [
   },
   {
     path: "/models/rebecca.glb",
-    desktop: { position: [5.8, 1.6, 0], scale: [1, 1, 1] },
+    desktop: { position: [5.5, 1.6, 0], scale: [1, 1, 1] },
     tablet: { position: [-2, 0, 0], scale: [1, 1, 1] },
     mobile: { position: [0, -4, 0], scale: [0.8, 0.8, 0.8] }
   },
   {
     path: "/models/marta.glb",
-    desktop: { position: [-5.8, -2.4, 0], scale: [0.9, 0.9, 0.9] },
+    desktop: { position: [-5.5, -2.4, 0], scale: [0.9, 0.9, 0.9] },
     tablet: { position: [2, 0, 0], scale: [1, 1, 1] },
     mobile: { position: [0, -8.6, 0], scale: [0.7, 0.7, 0.7] }
   },
@@ -94,7 +94,7 @@ const modelsData = [
   },
   {
     path: "/models/fra.glb",
-    desktop: { position: [5.8, -2.4, 0], scale: [1, 1, 1] },
+    desktop: { position: [5.5, -2.4, 0], scale: [1, 1, 1] },
     tablet: { position: [2, -2, 0], scale: [1, 1, 1] },
     mobile: { position: [0, -14.6, 0], scale: [0.8, 0.8, 0.8] }
   }
