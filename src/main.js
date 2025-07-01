@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
- 
+
 
 // SCENA BASE
 const scene = new THREE.Scene();
@@ -126,6 +126,8 @@ modelsData.forEach((modelData) => {
 
       scene.add(model);
       rotatingModels.push(model);
+
+      window.parent.postMessage("threejs-scene-loaded", "*");
     },
     undefined,
     (error) => {
