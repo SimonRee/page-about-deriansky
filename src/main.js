@@ -14,6 +14,9 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.z = 40;
 
+camera.aspect = window.innerWidth / window.innerHeight;
+camera.updateProjectionMatrix();
+
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
